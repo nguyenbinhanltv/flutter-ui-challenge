@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:math' show Random;
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -8,7 +7,9 @@ import 'package:flare_flutter/flare.dart';
 import 'package:flare_dart/math/mat2d.dart';
 import 'package:flare_flutter/flare_actor.dart';
 import 'package:flare_flutter/flare_controller.dart';
-import 'contacts.dart';
+import 'package:flutter_svg/flutter_svg.dart';
+import 'package:flutter_ui_challenge/constant.dart';
+import 'package:flutter_ui_challenge/widgets/counter.dart';
 
 class CupertinoRefreshControlDemo extends StatefulWidget {
   static const String routeName = '/cupertino/refresh';
@@ -20,8 +21,6 @@ class CupertinoRefreshControlDemo extends StatefulWidget {
 
 class _CupertinoRefreshControlDemoState
     extends State<CupertinoRefreshControlDemo> with FlareController {
-  List<List<String>> randomizedContacts;
-
   ActorAnimation _loadingAnimation;
   ActorAnimation _successAnimation;
   ActorAnimation _pullAnimation;
@@ -72,15 +71,6 @@ class _CupertinoRefreshControlDemoState
   @override
   void initState() {
     super.initState();
-    repopulateList();
-  }
-
-  void repopulateList() {
-    final Random random = Random();
-    randomizedContacts = List<List<String>>.generate(100, (int index) {
-      return contacts[random.nextInt(contacts.length)]
-        ..add(random.nextBool().toString());
-    });
   }
 
   Widget buildRefreshWidget(
@@ -112,46 +102,183 @@ class _CupertinoRefreshControlDemoState
       ),
       child: Scaffold(
         body: DecoratedBox(
-          decoration: const BoxDecoration(color: Colors.white),
+          decoration: const BoxDecoration(color: kBackgroundColor),
           child: CustomScrollView(
             slivers: <Widget>[
-              CupertinoSliverNavigationBar(
-                backgroundColor: Color.fromRGBO(110, 90, 160, 1.0),
-                middle: Container(height: 0, width: 0),
-                largeTitle: IconButton(
-                  color: Colors.white,
-                  alignment: Alignment.centerLeft,
-                  icon: Icon(Icons.menu),
-                  onPressed: () {},
-                ),
-                previousPageTitle: 'Cupertino',
-              ),
               CupertinoSliverRefreshControl(
                 refreshTriggerPullDistance: 190.0,
                 refreshIndicatorExtent: 190.0,
                 builder: buildRefreshWidget,
                 onRefresh: () {
                   return Future<void>.delayed(const Duration(seconds: 5))
-                    ..then<void>((_) {
-                      if (mounted) {
-                        setState(() => repopulateList());
-                      }
-                    });
+                    ..then<void>((_) {});
                 },
               ),
               SliverSafeArea(
-                top: false, // Top safe area is consumed by the navigation bar.
+                top: false,
                 sliver: SliverList(
                   delegate: SliverChildBuilderDelegate(
                     (BuildContext context, int index) {
-                      return ListItem(
-                        name: randomizedContacts[index][0],
-                        place: randomizedContacts[index][1],
-                        date: randomizedContacts[index][2],
-                        called: randomizedContacts[index][3] == 'true',
+                      return Column(
+                        children: <Widget>[
+                          Container(
+                            margin: EdgeInsets.symmetric(horizontal: 20),
+                            padding: EdgeInsets.symmetric(
+                                vertical: 10, horizontal: 20),
+                            height: 60,
+                            width: double.infinity,
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(25),
+                              border: Border.all(
+                                color: Color(0xFFE5E5E5),
+                              ),
+                            ),
+                            child: Row(
+                              children: <Widget>[
+                                SvgPicture.asset(
+                                    'assets/icons/maps-and-flags.svg'),
+                                SizedBox(width: 20),
+                                Expanded(
+                                  child: DropdownButton(
+                                    isExpanded: true,
+                                    underline: SizedBox(),
+                                    icon: SvgPicture.asset(
+                                        'assets/icons/dropdown.svg'),
+                                    value: 'Indonesia',
+                                    items: [
+                                      'Indonesia',
+                                      'Bangladesh',
+                                      'United States',
+                                      'Japan'
+                                    ].map<DropdownMenuItem<String>>(
+                                        (String value) {
+                                      return DropdownMenuItem<String>(
+                                        value: value,
+                                        child: Text(value),
+                                      );
+                                    }).toList(),
+                                    onChanged: (value) {},
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          SizedBox(height: 20),
+                          Padding(
+                            padding: EdgeInsets.symmetric(horizontal: 20),
+                            child: Column(
+                              children: <Widget>[
+                                Row(
+                                  children: <Widget>[
+                                    RichText(
+                                      text: TextSpan(
+                                        children: [
+                                          TextSpan(
+                                            text: 'Case Update\n',
+                                            style: kTitleTextstyle,
+                                          ),
+                                          TextSpan(
+                                            text: 'Newest update March 28',
+                                            style: TextStyle(
+                                              color: kTextLightColor,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                    Spacer(),
+                                    Text(
+                                      'See details',
+                                      style: TextStyle(
+                                        color: kPrimaryColor,
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                SizedBox(height: 20),
+                                Container(
+                                  padding: EdgeInsets.all(20),
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(20),
+                                    color: Colors.white,
+                                    boxShadow: [
+                                      BoxShadow(
+                                        offset: Offset(0, 4),
+                                        blurRadius: 30,
+                                        color: kShadowColor,
+                                      ),
+                                    ],
+                                  ),
+                                  child: Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: <Widget>[
+                                      Counter(
+                                        color: kInfectedColor,
+                                        number: 1046,
+                                        title: 'Infected',
+                                      ),
+                                      Counter(
+                                        color: kDeathColor,
+                                        number: 87,
+                                        title: 'Deaths',
+                                      ),
+                                      Counter(
+                                        color: kRecovercolor,
+                                        number: 46,
+                                        title: 'Recovered',
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                SizedBox(height: 20),
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: <Widget>[
+                                    Text(
+                                      'Spread of Virus',
+                                      style: kTitleTextstyle,
+                                    ),
+                                    Text(
+                                      'See details',
+                                      style: TextStyle(
+                                        color: kPrimaryColor,
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                Container(
+                                  margin: EdgeInsets.only(top: 20),
+                                  padding: EdgeInsets.all(20),
+                                  height: 178,
+                                  width: double.infinity,
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(20),
+                                    color: Colors.white,
+                                    boxShadow: [
+                                      BoxShadow(
+                                        offset: Offset(0, 10),
+                                        blurRadius: 30,
+                                        color: kShadowColor,
+                                      ),
+                                    ],
+                                  ),
+                                  child: Image.asset(
+                                    'assets/images/map.png',
+                                    fit: BoxFit.contain,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
                       );
                     },
-                    childCount: 20,
+                    childCount: 1,
                   ),
                 ),
               ),
