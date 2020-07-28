@@ -9,7 +9,19 @@ import 'package:flare_flutter/flare_actor.dart';
 import 'package:flare_flutter/flare_controller.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_ui_challenge/constant.dart';
+import 'package:flutter_ui_challenge/covid19api/fetchApi.dart';
+import 'package:flutter_ui_challenge/covid19api/summary.dart';
 import 'package:flutter_ui_challenge/widgets/counter.dart';
+
+var items = [
+  'Afghanistan',
+  'Albania',
+  'Algeria',
+  'Andorra',
+  'Angola',
+  'Antigua and Barbuda',
+  'Argentina',
+];
 
 class CupertinoRefreshControlDemo extends StatefulWidget {
   static const String routeName = '/cupertino/refresh';
@@ -25,6 +37,9 @@ class _CupertinoRefreshControlDemoState
   ActorAnimation _successAnimation;
   ActorAnimation _pullAnimation;
   ActorAnimation _cometAnimation;
+
+  Future<Global> futureGlobal;
+  Future<Contries> futureContries;
 
   RefreshIndicatorMode _refreshState;
   double _pulledExtent;
@@ -71,24 +86,32 @@ class _CupertinoRefreshControlDemoState
   @override
   void initState() {
     super.initState();
+
+    futureGlobal = fetchGlobalData();
+    futureContries = fetchContriesData();
+
+    print(futureGlobal);
   }
 
   Widget buildRefreshWidget(
-      BuildContext context,
-      RefreshIndicatorMode refreshState,
-      double pulledExtent,
-      double refreshTriggerPullDistance,
-      double refreshIndicatorExtent) {
+    BuildContext context,
+    RefreshIndicatorMode refreshState,
+    double pulledExtent,
+    double refreshTriggerPullDistance,
+    double refreshIndicatorExtent,
+  ) {
     _refreshState = refreshState;
     _pulledExtent = pulledExtent;
     _refreshTriggerPullDistance = refreshTriggerPullDistance;
     _refreshIndicatorExtent = refreshIndicatorExtent;
 
-    return FlareActor('assets/flares/space_demo.flr',
-        alignment: Alignment.center,
-        animation: 'idle',
-        fit: BoxFit.cover,
-        controller: this);
+    return FlareActor(
+      'assets/flares/space_demo.flr',
+      alignment: Alignment.center,
+      animation: 'idle',
+      fit: BoxFit.cover,
+      controller: this,
+    );
   }
 
   @override
@@ -110,10 +133,11 @@ class _CupertinoRefreshControlDemoState
                 refreshIndicatorExtent: 190.0,
                 builder: buildRefreshWidget,
                 onRefresh: () {
-                  return Future<void>.delayed(const Duration(seconds: 5))
+                  return Future<void>.delayed(const Duration(seconds: 10))
                     ..then<void>((_) {});
                 },
               ),
+              SizedBox(height: 20),
               SliverSafeArea(
                 top: false,
                 sliver: SliverList(
@@ -144,14 +168,10 @@ class _CupertinoRefreshControlDemoState
                                     isExpanded: true,
                                     underline: SizedBox(),
                                     icon: SvgPicture.asset(
-                                        'assets/icons/dropdown.svg'),
-                                    value: 'Indonesia',
-                                    items: [
-                                      'Indonesia',
-                                      'Bangladesh',
-                                      'United States',
-                                      'Japan'
-                                    ].map<DropdownMenuItem<String>>(
+                                      'assets/icons/dropdown.svg',
+                                    ),
+                                    value: 'Afghanistan',
+                                    items: items.map<DropdownMenuItem<String>>(
                                         (String value) {
                                       return DropdownMenuItem<String>(
                                         value: value,
@@ -222,12 +242,12 @@ class _CupertinoRefreshControlDemoState
                                       ),
                                       Counter(
                                         color: kDeathColor,
-                                        number: 87,
+                                        number: 870,
                                         title: 'Deaths',
                                       ),
                                       Counter(
                                         color: kRecovercolor,
-                                        number: 46,
+                                        number: 406,
                                         title: 'Recovered',
                                       ),
                                     ],
