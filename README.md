@@ -2,6 +2,8 @@
 
 A Flutter project about UI Challenge (Covid 19 UI)
 
+![alt text](https://github.com/nguyenbinhanltv/flutter-ui-challenge/blob/master/assets/images/UI.png)
+
 ## Getting Started
 
 This project is a starting point for a Flutter application.
