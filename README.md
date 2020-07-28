@@ -1,6 +1,6 @@
 # flutter_ui_challenge
 
-A new Flutter project.
+A Flutter project about UI Challenge (Covid 19 UI)
 
 ## Getting Started
 
